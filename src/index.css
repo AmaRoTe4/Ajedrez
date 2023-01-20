@@ -1,0 +1,40 @@
+.box-tablero{
+  content: "";
+  margin-top: 10vh;
+  margin-left: 10vw;
+  height: 520px;
+  width: 520px;
+  border: 1px black solid;
+}
+
+.casilla{
+  content: "";
+  height: 12.5%;
+  width: 12.5%;
+  border: 1px black solid;
+  background-color: rgb(160, 85, 0);
+}
+
+.pintado{
+  background-color: rgb(207, 159, 0);
+}
+
+.piesaNegra{
+    content: "";
+    color: black;
+}
+
+.seleccionado{
+  opacity: 0.5;
+}
+
+.piesaBlanca{
+    content: "";
+    color: white;
+}
+
+.centrado {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

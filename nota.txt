@@ -1,0 +1,9 @@
+tenemos que hacer:
+    primero:
+        movimientos engeneral
+        empezando por negra
+        agregar los movimientos contados por piesa por temas de movimientos
+        efectos y demas... de movimiento
+
+    esto va a ser lo basico nomas
+    porque despues para juagr en general hay que hacer un bochas mas de cosas y son demasiadas
