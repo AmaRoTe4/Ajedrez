@@ -1,67 +1,83 @@
 [
     {
         "index": 15,
-        "piesa": "p"
+        "piesa": "p",
+        "movimientosR" : 0
       },
       {
         "index": 14,
-        "piesa": "p"
+        "piesa": "p",
+        "movimientosR" : 0
       },
       {
         "index": 13,
-        "piesa": "p"
+        "piesa": "p",
+        "movimientosR" : 0
       },
       {
         "index": 12,
-        "piesa": "p"
+        "piesa": "p",
+        "movimientosR" : 0
       },
       {
         "index": 11,
-        "piesa": "p"
+        "piesa": "p",
+        "movimientosR" : 0
       },
   
       {
         "index": 10,
-        "piesa": "p"
+        "piesa": "p",
+        "movimientosR" : 0
       },
       {
         "index": 9,
-        "piesa": "p"
+        "piesa": "p",
+        "movimientosR" : 0
       },
       {
         "index": 8,
-        "piesa": "p"
+        "piesa": "p",
+        "movimientosR" : 0
       },
       {
         "index": 7,
-        "piesa": "t"
+        "piesa": "t",
+        "movimientosR" : 0
       },
       {
         "index": 6,
-        "piesa": "c"
+        "piesa": "c",
+        "movimientosR" : 0
       },
       {
         "index": 5,
-        "piesa": "a"
+        "piesa": "a",
+        "movimientosR" : 0
       },
       {
         "index": 4,
-        "piesa": "r"
+        "piesa": "r",
+        "movimientosR" : 0
       },
       {
         "index": 3,
-        "piesa": "d"
+        "piesa": "d",
+        "movimientosR" : 0
       },
       {
         "index": 2,
-        "piesa": "a"
+        "piesa": "a",
+        "movimientosR" : 0
       },
       {
         "index": 1,
-        "piesa": "c"
+        "piesa": "c",
+        "movimientosR" : 0
       },
       {
         "index": 0,
-        "piesa": "t"
+        "piesa": "t",
+        "movimientosR" : 0
       }
 ]

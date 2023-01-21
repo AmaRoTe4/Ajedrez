@@ -8,7 +8,8 @@ import {conprobardorB , conprobardorN , conprobardorS , valorB , valorN , selecc
 function App() {
   const [seleccionado , setSelecionado] = useState<Piesa>({
     index: -1,
-    piesa: 'p'
+    piesa: 'p',
+    movimientosR : 0
   })
   const [posibleCasillas , setPosibleCasillas] = useState<number[]>([])
   const [casillas , setCasillas] = useState<Number[]>([
@@ -70,7 +71,7 @@ function App() {
                   
                   onClick={e => {
                     e.preventDefault(); 
-                    seleccionador(i , setSelecionado , piesasN , setPosibleCasillas)}}
+                    seleccionador(i , setSelecionado , piesasN , piesasB ,  setPosibleCasillas)}}
 
               >
                   {conprobardorB(i , piesasB) && 
@@ -79,9 +80,9 @@ function App() {
                   {conprobardorN(i , piesasN) && 
                     <img src={pathOfPhoto(valorN(i , piesasN) , "n")} height={50} />
                   }  
-                  {/*<p style={{zIndex: "1"}}>
+                  <p style={{zIndex: "1"}}>
                     {i}
-                  </p>*/}
+                  </p>
               </div>
           )}
         </div>

@@ -65,50 +65,104 @@ const positionActual = (casAct:number):number[] => {
 
 //movientos:
 
-//movimientos:(solo con las negras por ahora)
-//P:  salida 2 para adelante
-//    de a uno para adelante
-//    come a los lados
-//    al paso
-//    coronacion
-//T:  a los lados para arriba y abajo
-//    enroque
-//C:  En L
-//A:  en diagonal
-//D:  torre y alfil
-//R:  de a uno
-//    enroque
+//enroques
+//peon al paso
+//coronar
 
-//movimientos basicos:(solo con las negras por ahora)
-//P:  -8
-//T:  coluna and fila , dependiendo del lugar
-//C:  -17 , -15 , -10 , -6  , -=  
-//A:  -7 -9 , -=
-//D:   A and T
-//R:   -1 -7 -8 -9 , -=
+const PosPeon = (
+  pos:number,
+  piesasN:Piesa[],
+  piesasB:Piesa[]
+):number[] => {
+  let piesaActual:Piesa = piesasN.filter(n => n.index === pos)[0]
+  let posActual = positionActual(pos)
+  let PiesasN:number[] = piesasN.map(n => n.index)
+  let PiesasB:number[] = piesasB.map(n => n.index)
+  let Agregar:number[] = []
 
-const PosPeon = (pos:number):number[] => {
-  return [pos - 8]
+  if(!PiesasN.includes(pos - 8) && !PiesasB.includes(pos - 8)) Agregar.unshift(pos - 8) 
+  if(!PiesasN.includes(pos - 16) && !PiesasB.includes(pos - 16) && piesaActual.movimientosR === 0 && Agregar.length !== 0) Agregar.unshift(pos - 16) 
+
+  if((posActual[0] - 1) * 8 <= pos - 9 && (posActual[0] - 1) * 8 + 8 > pos - 9 && PiesasB.includes(pos - 9)) Agregar.unshift(pos - 9)
+  if((posActual[0] - 1) * 8 <= pos - 7 && (posActual[0] - 1) * 8 + 8 > pos - 7 && PiesasB.includes(pos - 7)) Agregar.unshift(pos - 7)
+
+  // -9 , -7
+
+  return Agregar
 }
 
-const PosTorre = (pos:number):number[] => {
-  let posAgregar = []
+const PosTorre = (
+  pos:number,
+  piesasN:Piesa[],
+  piesasB:Piesa[],
+):number[] => {
+  let posAgregar: number[] = []
   let posActual = positionActual(pos)
+  let PiesasN:number[] = piesasN.map(n => n.index)
+  let PiesasB:number[] = piesasB.map(n => n.index)
+  let posArriba: number[] = [pos];
+  let posAbajo: number[] = [pos];
+  let posDer: number[] = [pos];
+  let posIzq: number[] = [pos];
+  let max = 0
+  let BoolposArriba = true
+  let BoolposAbajo = true
+  let BoolposDer = true
+  let BoolposIzq = true
 
-  for(let i = posActual[0] * 8; i < posActual[0] * 8 + 8; i++){
-    posAgregar.push(i)
+  while(true){
+    max++
+    
+    if(BoolposArriba && posArriba[0] - posActual[1] !== 0) {
+      let auxPos = posArriba[0] - 8
+      if(PiesasN.includes(auxPos)) BoolposArriba = false;
+      if(BoolposArriba) posArriba.unshift(auxPos)
+      if(PiesasB.includes(auxPos)) BoolposArriba = false;
+    }
+    if(BoolposAbajo && posAbajo[0] - 55 < 0)              {
+      let auxPos = posAbajo[0] + 8
+      if(PiesasN.includes(auxPos)) BoolposAbajo = false;
+      if(BoolposAbajo) posAbajo.unshift(auxPos)
+      if(PiesasB.includes(auxPos)) BoolposAbajo = false;
+    }
+    if(BoolposDer && ((posDer[0] + 1) % 8 !== 0))         {
+      let auxPos = posDer[0] + 1
+      if(PiesasN.includes(auxPos)) BoolposDer = false;
+      if(BoolposDer) posDer.unshift(auxPos)
+      if(PiesasB.includes(auxPos)) BoolposDer = false;
+    }
+    if(BoolposIzq && posIzq[0] % 8 !== 0)               {
+      let auxPos = posIzq[0] - 1
+      if(PiesasN.includes(auxPos)) BoolposIzq = false;
+      if(BoolposIzq) posIzq.unshift(auxPos)
+      if(PiesasB.includes(auxPos)) BoolposIzq = false;
+    }
+
+    if(
+      (posArriba[0] - posActual[1] === 0
+      && posAbajo[0] - 55 > 0
+      && (posDer[0] + 1) % 8 === 0
+      && posIzq[0] % 8 === 0) || max === 100
+    ) break
   }
 
-  for(let i = posActual[1]; i < 64; i+=8){
-    posAgregar.push(i)
-  }
+  posArriba.map(n => posAgregar.unshift(n))
+  posAbajo.map(n => posAgregar.unshift(n))
+  posDer.map(n => posAgregar.unshift(n))
+  posIzq.map(n => posAgregar.unshift(n))
 
-  return posAgregar
+  if(posAgregar.length > 0) return posAgregar
+  
+  return [0] 
 }
 
-const PosCaballo = (pos:number):number[] => {
+const PosCaballo = (
+  pos:number,
+  piesasN:Piesa[]
+):number[] => {
   let posAgregar = []
   let posActual = positionActual(pos)
+  let PiesasN:number[] = piesasN.map(n => n.index)
 
   if(pos - 17 >= posActual[0] * 8 - 16) posAgregar.push(pos - 17)
   if(pos - 15 < posActual[0] * 8 - 8) posAgregar.push(pos - 15)
@@ -120,26 +174,69 @@ const PosCaballo = (pos:number):number[] => {
   if(pos + 10 >= posActual[0] * 8 + 8 && pos + 10 <= posActual[0] * 8 + 15) posAgregar.push(pos + 10)
   if(pos + 6 >= posActual[0] * 8 + 8 && pos + 6 <= posActual[0] * 8 + 15) posAgregar.push(pos + 6)
 
-  return posAgregar.filter(n => n < 64 && n >= 0)
+  return posAgregar.filter(n => n < 64 && n >= 0).filter(m => !PiesasN.includes(m))
 }
 
-const PosAlfil = (pos:number):number[] => {
+const PosAlfil = (
+  pos:number,
+  piesasN:Piesa[],
+  piesasB:Piesa[],
+):number[] => {
   let supDer:number[] = [pos]
   let supIzq:number[] = [pos]
   let infDer:number[] = [pos]
   let infIzq:number[] = [pos]
+  let CodsupDer:boolean = true
+  let CodsupIzq:boolean = true
+  let CodinfDer:boolean = true
+  let CodinfIzq:boolean = true
   let vueltas = 0;
+
+  const posPiesasN:number[] = piesasN.map(n => n.index)
+  const posPiesasB:number[] = piesasB.map(n => n.index)
 
   while(true){
       vueltas++
       //sup der
-      if(((supDer[0] + 1) % 8 !== 0) && supDer[0] - 7 >= 0 ) supDer.unshift(supDer[0] - 7) 
+      if(CodsupDer && ((supDer[0] + 1) % 8 !== 0) && supDer[0] - 7 >= 0){ 
+        let auxValue:number = supDer[0] - 7
+        if(posPiesasN.includes(auxValue)){
+          CodsupDer = false 
+          continue
+        } 
+        supDer.unshift(auxValue)
+        if(posPiesasB.includes(auxValue)) CodsupDer = false
+      } 
       //sup izq
-      if((supIzq[0] % 8 !== 0) && supIzq[0] - 9 >= 0 ) supIzq.unshift(supIzq[0] - 9)
+      if(CodsupIzq && (supIzq[0] % 8 !== 0) && supIzq[0] - 9 >= 0 ){ 
+        let auxValue:number = supIzq[0] - 9
+        if(posPiesasN.includes(auxValue)){
+          CodsupIzq = false 
+          continue
+        } 
+        supIzq.unshift(auxValue)
+        if(posPiesasB.includes(auxValue)) CodsupIzq = false
+      }
       //inf der
-      if(((infDer[0] + 1) % 8 !== 0) && infDer[0] + 9 <= 64 ) infDer.unshift(infDer[0] + 9)
+      if(CodinfDer && ((infDer[0] + 1) % 8 !== 0) && infDer[0] + 9 <= 64 ){ 
+        let auxValue:number = infDer[0] + 9
+        if(posPiesasN.includes(auxValue)){
+          CodinfDer = false; 
+          continue
+        } 
+        infDer.unshift(auxValue)
+        if(posPiesasB.includes(auxValue)) CodinfDer = false;
+      }
       //inf izq
-      if((infIzq[0] % 8 !== 0) && infIzq[0] + 7 <= 64 ) infIzq.unshift(infIzq[0] + 7)
+      if(CodinfIzq && (infIzq[0] % 8 !== 0) && infIzq[0] + 7 <= 64 ){ 
+        let auxValue:number = infIzq[0] + 7
+        if(posPiesasN.includes(auxValue)){
+          CodinfIzq = false  
+          continue
+        } 
+        infIzq.unshift(auxValue)
+        if(posPiesasB.includes(auxValue)) CodinfIzq = false 
+      }
 
       if(
         (
@@ -154,14 +251,30 @@ const PosAlfil = (pos:number):number[] => {
   return [...supDer , ...supIzq , ...infDer , ...infIzq]
 }
 
-const PosDama = (pos:number):number[] => {
-  const alfil:number[] = PosAlfil(pos);
-  const torre:number[] = PosTorre(pos);
+const PosDama = (
+  pos:number,
+  piesasN:Piesa[],
+  piesasB:Piesa[],
+):number[] => {
+  const alfil:number[] = PosAlfil(
+    pos,
+    piesasN,
+    piesasB,  
+  );
+  const torre:number[] = PosTorre(
+    pos,
+    piesasN,
+    piesasB,  
+  );
   return [...alfil , ...torre]
 }
 
-const PosRey = (pos:number):number[] => {
+const PosRey = (
+  pos:number,
+  piesasN:Piesa[],
+):number[] => {
   let posAgregar:number[] = []
+  let filtro:number[] = piesasN.filter(n => n.index !== pos).map(m => m.index)
 
   if(pos === 0){
     posAgregar.push(pos + 1)
@@ -192,32 +305,58 @@ const PosRey = (pos:number):number[] => {
     posAgregar.push(pos + 8)
     posAgregar.push(pos + 7)
   }else{
-    return [pos - 1 , pos - 7 , pos - 8 , pos - 9 , pos + 1 , pos + 7 , pos + 8 , pos + 9].filter(n => n < 64 && n >= 0)
+    return [pos - 1 , pos - 7 , pos - 8 , pos - 9 , pos + 1 , pos + 7 , pos + 8 , pos + 9].filter(n => n < 64 && n >= 0).filter(m => !filtro.includes(m))
   }
 
 
-  return posAgregar.filter(n => n < 64 && n >= 0)
+  return posAgregar.filter(m => !filtro.includes(m)).filter(n => n < 64 && n >= 0)
 }
 
-const obtenerValoresPooisblesDeCas = (aux:Piesa):number[] => {
+const obtenerValoresPooisblesDeCas = (
+  aux:Piesa,
+  piesasN:Piesa[],
+  piesasB:Piesa[],
+):number[] => {
   switch (aux.piesa) {
     case "p":
-      return PosPeon(aux.index)
+      return PosPeon(
+        aux.index,
+        piesasN,
+        piesasB  
+      )
       break;
     case "t":
-      return PosTorre(aux.index)
+      return PosTorre(
+        aux.index,
+        piesasN,
+        piesasB  
+      )
       break;
     case "c":
-      return PosCaballo(aux.index)
+      return PosCaballo(
+        aux.index,
+        piesasN,
+      )
       break;
     case "a":
-      return PosAlfil(aux.index)
+      return PosAlfil(
+        aux.index,
+        piesasN,
+        piesasB
+      )
       break;
     case "d":
-      return PosDama(aux.index)
+      return PosDama(
+        aux.index,
+        piesasN,
+        piesasB
+      )
       break;
     case "r":
-      return PosRey(aux.index)
+      return PosRey(
+        aux.index,
+        piesasN
+      )
       break;
 }
   return [0,0]
@@ -228,19 +367,31 @@ export const seleccionador = (
         i:number , 
         setSelecionado:React.Dispatch<React.SetStateAction<Piesa>>,
         piesasN:Piesa[],
+        piesasB:Piesa[],
         setPosibleCasillas:React.Dispatch<React.SetStateAction<number[]>>,
     ) => {
     const aux:Piesa[] = piesasN.filter(n => n.index === i);
     if(aux.length === 0) {
       setSelecionado({
         index: -1,
-        piesa: ""
+        piesa: "",
+        movimientosR: 0
       })
       setPosibleCasillas([])
       return 
     }
-    const retorno:number[] = obtenerValoresPooisblesDeCas(aux[0])
+    const retorno:number[] = 
+    obtenerValoresPooisblesDeCas(
+      aux[0],
+      piesasN,
+      piesasB,
+    )
+    
     setPosibleCasillas(retorno.filter((n , i) => {
+      return i === retorno.indexOf(n)
+    }))
+
+    console.log(retorno.filter((n , i) => {
       return i === retorno.indexOf(n)
     }))
 

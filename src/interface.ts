@@ -1,6 +1,6 @@
 export interface Piesa{
     index: number;
     piesa: string;
-    movimientosR?: number;
+    movimientosR: number;
     posiblesMov?: number[]; 
 }
