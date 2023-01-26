@@ -1,10 +1,32 @@
+.box-external-tablero{
+  height: 90vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box-nav-bar{
+  border-bottom:solid 1px black;
+  background-color:#946e2b;
+  height: 10vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.box-nav-bar button{
+  margin: 0px;
+  border:solid 1px black;
+}
+
 .box-tablero{
   content: "";
-  margin-top: 10vh;
-  margin-left: 10vw;
   height: 520px;
   width: 520px;
   border: 1px black solid;
+  /*transition: all 100ms;*/
 }
 
 .casilla{
@@ -12,11 +34,11 @@
   height: 12.5%;
   width: 12.5%;
   border: 1px black solid;
-  background-color: rgb(160, 85, 0);
+  background-color: rgb(99, 99, 99);
 }
 
 .pintado{
-  background-color: rgb(207, 159, 0);
+  background-color: rgb(255 255 255);
 }
 
 .piesaNegra{
@@ -24,17 +46,47 @@
     color: black;
 }
 
-.seleccionado{
-  opacity: 0.5;
-}
-
 .piesaBlanca{
     content: "";
     color: white;
+}
+
+.girado{
+  transform: rotate(180deg);
+}
+
+.seleccionado{
+  background-color: rgb(92, 131, 238);
+  /*border: solid 1px rgb(0, 0, 0);*/
 }
 
 .centrado {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.box-coronado{
+  transition: all 1000ms;
+  display: flex;
+  z-index: 10;
+  height: 20vh;
+  width: 80vw;
+  background-color: rgb(155, 105, 48);
+  color: white;
+  border:solid 2px white;
+}
+
+.box-coronado div{
+  transition: all 500ms;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 25%;
+}
+
+.box-coronado div:hover{
+  transform: scale(1.6);
+  cursor: pointer;
 }
