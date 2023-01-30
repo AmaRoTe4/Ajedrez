@@ -1,4 +1,4 @@
-import { Piesa } from "../interface"
+import { Movimientos, Piesa } from "../interface"
 
 export const pathOfPhoto = (valor:string , tipe:string):string => {
     switch (valor) {
@@ -63,10 +63,85 @@ const positionActual = (casAct:number):number[] => {
     return ejes;
 }
 
-//movientos:
+const obtenerValoresPooisblesDeCas = (
+  aux:Piesa,
+  piesasN:Piesa[],
+  piesasB:Piesa[],
+):number[] => {
+  switch (aux.piesa) {
+    case "p":
+      return PosPeon(
+        aux.index,
+        piesasN,
+        piesasB  
+      )
+    case "t":
+      return PosTorre(
+        aux.index,
+        piesasN,
+        piesasB  
+      )
+    case "c":
+      return PosCaballo(
+        aux.index,
+        piesasN,
+        piesasB
+      )
+    case "a":
+      return PosAlfil(
+        aux.index,
+        piesasN,
+        piesasB
+      )
+    case "d":
+      return PosDama(
+        aux.index,
+        piesasN,
+        piesasB
+      )
+    case "r":
+      return PosRey(
+        aux.index,
+        piesasN,
+        piesasB,
+      )
+}
+  return [0,0]
+}
 
-//enroques
-//peon al paso
+const obtenerValorPeonAtaque = (piesasRival:Piesa[] , color:number):number[] => {
+  let retorno:number[] = []
+  let peonesLaterales:number[] = piesasRival.filter(n => (n.index % 8 === 0 || (n.index + 1) % 8 === 0) && n.piesa === "p").map(n => n.index);
+  let peonesCentrales:number[] = piesasRival.filter(n => !(n.index % 8 === 0 || (n.index + 1) % 8 === 0) && n.piesa === "p").map(n => n.index)
+  
+  if(color === 0){
+    peonesLaterales.map(n => {
+      n % 8 === 0 
+      ? retorno.push(n - 7)
+      : (n + 1) % 8 === 0 
+      ? retorno.push(n - 9) 
+      : ""
+    }) 
+    peonesCentrales.map(n => {
+      retorno.push(n - 7)
+      retorno.push(n - 9)
+    })
+  }else{
+    peonesLaterales.map(n => {
+      n % 8 === 0 
+      ? retorno.push(n + 7)
+      : (n + 1) % 8 === 0 
+      ? retorno.push(n + 9)
+      : ""
+    })
+    peonesCentrales.map(n => {
+      retorno.push(n + 7)
+      retorno.push(n + 9)
+    })
+  }
+
+  return retorno
+}
 
 const PosPeon = (
   pos:number,
@@ -309,14 +384,84 @@ const PosRey = (
   piesasB:Piesa[],
 ):number[] => {
   let posAgregar:number[] = []
+  let posEnroque:number[] = []
+  let color:number = 0
   const PiesasN:number[] = piesasN.map(n => n.index)
+  let piesas:Piesa[] = []
+  let piesasRival:Piesa[] = []
   let filtro:number[] = []
-
+  
   if(PiesasN.includes(pos)){
+    color = 1
     piesasN.filter(n => n.index !== pos).map(m => filtro.push(m.index))
+    piesasN.map(n => piesas.push(n))
+    piesasB.map(n => piesasRival.push(n))
   }else{
     piesasB.filter(n => n.index !== pos).map(m => filtro.push(m.index))
+    piesasB.map(n => piesas.push(n))
+    piesasN.map(n => piesasRival.push(n))
   }
+
+  let posiblesPosDelRival:number[] = []
+  piesasRival.map(n => n.piesa !== "r" && n.piesa !== "p"
+    ? posiblesPosDelRival.push(...obtenerValoresPooisblesDeCas(n, piesasRival , piesas))
+    : "" 
+  ) 
+  
+  let aux2 = obtenerValorPeonAtaque(piesasRival , color)
+  aux2.map(n => posiblesPosDelRival.push(n))
+  
+  posiblesPosDelRival.filter(n => n !== pos).map(m => filtro.push(m))
+
+  let aux = posiblesPosDelRival.filter((n , i) => {
+    return i === posiblesPosDelRival.indexOf(n); 
+  })
+
+  const exprecionEnroqueCorto = () => {
+    let exprecion:boolean = false;
+    color === 0 
+    ? exprecion =  (
+      ((piesas.filter(n => n.piesa === "t" && n.index === 0 && n.movimientosR === 0).length === 0) 
+      || (piesas.filter(n => n.piesa === "r" && n.index === 3 && n.movimientosR === 0).length === 0)
+      || (piesas.filter(n => n.index === 1 || n.index === 2).length !== 0) 
+      || aux.includes(3) || aux.includes(1) || aux.includes(2)
+      )
+    )
+    : exprecion = (
+      ((piesas.filter(n => n.piesa === "t" && n.index === 56 && n.movimientosR === 0).length === 0) 
+      || (piesas.filter(n => n.piesa === "r" && n.index === 59 && n.movimientosR === 0).length === 0)
+      || (piesas.filter(n => n.index === 57 || n.index === 58).length !== 0) 
+      || aux.includes(59) || aux.includes(58) || aux.includes(57)
+      )
+    )
+    return exprecion
+  }
+
+  const exprecionEnroqueLargo = () => {
+    let exprecion:boolean = false;
+    color === 0 
+    ? exprecion = (
+      ((piesas.filter(n => n.piesa === "t" && n.index === 7 && n.movimientosR === 0).length === 0) 
+      || (piesas.filter(n => n.piesa === "r" && n.index === 3 && n.movimientosR === 0).length === 0)
+      || (piesas.filter(n => n.index === 4 || n.index === 5 || n.index === 6 ).length !== 0)
+      || (piesasRival.filter(n => n.index === 4 || n.index === 5 || n.index === 6 ).length !== 0)
+      || aux.includes(4) || aux.includes(5) || aux.includes(3)
+      )
+    )
+    : exprecion = (
+      ((piesas.filter(n => n.piesa === "t" && n.index === 63 && n.movimientosR === 0).length === 0) 
+      || (piesas.filter(n => n.piesa === "r" && n.index === 59 && n.movimientosR === 0).length === 0)
+      || (piesas.filter(n => n.index === 60 || n.index === 61 || n.index === 62 ).length !== 0)
+      || aux.includes(60) || aux.includes(62) || aux.includes(61) || aux.includes(59)
+      )
+    )
+    return exprecion;
+  }
+
+  if(!exprecionEnroqueCorto() && color === 1) posEnroque.push(57)
+  if(!exprecionEnroqueCorto() && color === 0) posEnroque.push(1)
+  if(!exprecionEnroqueLargo() && color === 1) posEnroque.push(61)
+  if(!exprecionEnroqueLargo() && color === 0) posEnroque.push(5)
 
   if(pos === 0){
     posAgregar.push(pos + 1)
@@ -347,63 +492,75 @@ const PosRey = (
     posAgregar.push(pos + 8)
     posAgregar.push(pos + 7)
   }else{
-    return [pos - 1 , pos - 7 , pos - 8 , pos - 9 , pos + 1 , pos + 7 , pos + 8 , pos + 9].filter(n => n < 64 && n >= 0).filter(m => !filtro.includes(m))
+    return [...[pos - 1 , pos - 7 , pos - 8 , pos - 9 , pos + 1 , pos + 7 , pos + 8 , pos + 9].filter(n => n < 64 && n >= 0).filter(m => !filtro.includes(m)) , ...posEnroque]
   }
 
-
-  return posAgregar.filter(m => !filtro.includes(m)).filter(n => n < 64 && n >= 0)
+  return [...posAgregar.filter(m => !filtro.includes(m)).filter(n => n < 64 && n >= 0) , ...posEnroque]
 }
 
-const obtenerValoresPooisblesDeCas = (
-  aux:Piesa,
-  piesasN:Piesa[],
-  piesasB:Piesa[],
-):number[] => {
-  switch (aux.piesa) {
-    case "p":
-      return PosPeon(
-        aux.index,
-        piesasN,
-        piesasB  
-      )
-      break;
-    case "t":
-      return PosTorre(
-        aux.index,
-        piesasN,
-        piesasB  
-      )
-      break;
-    case "c":
-      return PosCaballo(
-        aux.index,
-        piesasN,
-        piesasB
-      )
-      break;
-    case "a":
-      return PosAlfil(
-        aux.index,
-        piesasN,
-        piesasB
-      )
-      break;
-    case "d":
-      return PosDama(
-        aux.index,
-        piesasN,
-        piesasB
-      )
-      break;
-    case "r":
-      return PosRey(
-        aux.index,
-        piesasN,
-        piesasB,
-      )
-      break;
+const enroqueCorto = (
+  piesas:Piesa[],
+  setPiesas:React.Dispatch<React.SetStateAction<Piesa[]>>,
+  color:boolean,
+) => {
+  let newPiesas:Piesa[] = []
+  let Rey:Piesa = piesas.filter(n => n.index === 3)[0]
+  let Torre:Piesa = piesas.filter(n => n.index === 0)[0]
+
+  if(!color){
+    piesas.map(n => n.index !== 3 && n.index !== 0 ? newPiesas.push(n) : "")
+    Rey = piesas.filter(n => n.index === 3)[0]
+    Torre = piesas.filter(n => n.index === 0)[0]
+    
+    Rey.index = 1
+    Torre.index = 2
+  }else{
+    piesas.map(n => n.index !== 59 && n.index !== 56 ? newPiesas.push(n) : "")
+    Rey = piesas.filter(n => n.index === 59)[0]
+    Torre = piesas.filter(n => n.index === 56)[0]
+    
+    Rey.index = 57
+    Torre.index = 58
+  }
+
+  Rey.movimientosR++
+  Torre.movimientosR++
+
+  newPiesas.push(Rey)
+  newPiesas.push(Torre)
+
+  setPiesas(newPiesas)
 }
-  return [0,0]
+
+const enroqueLargo = (
+  piesas:Piesa[],
+  setPiesas:React.Dispatch<React.SetStateAction<Piesa[]>>,
+  color:boolean,
+) => {
+  let newPiesas:Piesa[] = []
+  let Rey:Piesa
+  let Torre:Piesa
+
+  if(!color){
+    piesas.map(n => n.index !== 3 && n.index !== 7 ? newPiesas.push(n) : "")
+    Rey = piesas.filter(n => n.index === 3)[0]
+    Torre = piesas.filter(n => n.index === 7)[0]
+    
+    Rey.index = 5
+    Torre.index = 4
+  }else{
+    piesas.map(n => n.index !== 59 && n.index !== 63 ? newPiesas.push(n) : "")
+    Rey = piesas.filter(n => n.index === 59)[0]
+    Torre = piesas.filter(n => n.index === 63)[0]
+    
+    Rey.index = 61
+    Torre.index = 60
+  }
+
+  newPiesas.push(Rey)
+  newPiesas.push(Torre)
+
+  setPiesas(newPiesas)
 }
 
 export const seleccionador = (
@@ -455,24 +612,48 @@ export const movimientoDePos = (
   setSelecionado:React.Dispatch<React.SetStateAction<Piesa>>,
   setPosibleCasillas:React.Dispatch<React.SetStateAction<number[]>>,
   setTurno:React.Dispatch<React.SetStateAction<number>>,
+  setMovimientos:React.Dispatch<React.SetStateAction<Movimientos[]>>,
+  movimiento:number,
+  setMovimiento:React.Dispatch<React.SetStateAction<number>>,
 ) => {
   let piesa:Piesa = piesas.filter(n => n.index === posActual)[0]
   let piesasFilter:Piesa[] = piesas.filter(n => n.index !== posActual)
   let piesasFilterRival:Piesa[] = piesasRival.filter(n => n.index !== newPos)
 
-  piesa.index = newPos
-  piesa.movimientosR++
-  piesasFilter.push(piesa)  
+  let NewMovimiento:Movimientos = {
+    id: movimiento,
+    color: movimiento % 2 === 0 ? 0 : 1,
+    piesa: piesa.piesa ,
+    casilla: newPos,
+    captura: "", 
+  } 
 
-  setPiesas(piesasFilter)
-  setPiesasRival(piesasFilterRival)
+  if(piesa.piesa === 'r' && (newPos === 57 || newPos === 1) && piesa.movimientosR === 0){
+    enroqueCorto(piesas , setPiesas , newPos === 57)
+  } 
+
+  else if(piesa.piesa === 'r' && (newPos === 61 || newPos === 5) && piesa.movimientosR === 0){
+    enroqueLargo(piesas , setPiesas , newPos === 61)
+  } 
+
+  else{    
+    piesa.index = newPos
+    piesa.movimientosR++
+    piesasFilter.push(piesa)  
+  
+    setPiesas(piesasFilter)
+    setPiesasRival(piesasFilterRival)
+  }
+
   setSelecionado({
     index: -1,
     piesa: '',
     movimientosR : 0
   })
   setPosibleCasillas([])
-  setTurno(n => n === 0 ? 1 : 0)    
+  setTurno(n => n === 0 ? 1 : 0)
+  setMovimiento(n => n + 1)
+  setMovimientos(n => [...n , NewMovimiento])    
 }
 
 export const deseleccionar = (
@@ -497,81 +678,6 @@ export const coronarPiesa = (
 
   piesa.piesa = newPiesaValue
   newPiesas.push(piesa);
-
-  setPiesas(newPiesas)
-}
-
-export const enroqueCorto = (
-  piesas:Piesa[],
-  piesasRival:Piesa[],
-  setPiesas:React.Dispatch<React.SetStateAction<Piesa[]>>,
-) => {
-  let posiblesPosDelRival:number[] = []
-  piesasRival.map(n => posiblesPosDelRival.push(...obtenerValoresPooisblesDeCas(n, piesasRival, piesas,)))
-
-  let aux = posiblesPosDelRival.filter((n , i) => {
-    return i === posiblesPosDelRival.indexOf(n); 
-  })
-
-  const exprecion = () => {
-    return (
-      ((piesas.filter(n => n.piesa === "t" && n.index === 0 && n.movimientosR === 0).length === 0) 
-      || (piesas.filter(n => n.piesa === "r" && n.index === 3 && n.movimientosR === 0).length === 0)
-      || (piesas.filter(n => n.index === 1 || n.index === 2).length !== 0) 
-      || aux.includes(3) || aux.includes(1) || aux.includes(2)
-      )
-    )
-  }
-
-  if(exprecion()) return
-
-  let newPiesas:Piesa[] = piesas.filter(n => n.index !== 3 && n.index !== 0)
-  let Rey:Piesa = piesas.filter(n => n.index === 3)[0]
-  let Torre:Piesa = piesas.filter(n => n.index === 0)[0]
-
-  Rey.index = 1
-  Torre.index = 2
-
-  newPiesas.push(Rey)
-  newPiesas.push(Torre)
-
-  setPiesas(newPiesas)
-}
-
-export const enroqueLargo = (
-  piesas:Piesa[],
-  piesasRival:Piesa[],
-  setPiesas:React.Dispatch<React.SetStateAction<Piesa[]>>,
-) => {
-  let posiblesPosDelRival:number[] = []
-  piesasRival.map(n => posiblesPosDelRival.push(...obtenerValoresPooisblesDeCas(n, piesasRival, piesas,)))
-
-  let aux = posiblesPosDelRival.filter((n , i) => {
-    return i === posiblesPosDelRival.indexOf(n); 
-  })
-
-  const exprecion = () => {
-    return (
-      ((piesas.filter(n => n.piesa === "t" && n.index === 7 && n.movimientosR === 0).length === 0) 
-      || (piesas.filter(n => n.piesa === "r" && n.index === 3 && n.movimientosR === 0).length === 0)
-      || (piesas.filter(n => n.index === 4 || n.index === 5 || n.index === 6 ).length !== 0)
-      || (piesasRival.filter(n => n.index === 4 || n.index === 5 || n.index === 6 ).length !== 0)
-      || aux.includes(4) || aux.includes(5) || aux.includes(3)
-      )
-    )
-  }
-
-  if(exprecion()) return
-    
-  let newPiesas:Piesa[] = piesas.filter(n => n.index !== 3 && n.index !== 7)
-  let Rey:Piesa = piesas.filter(n => n.index === 3)[0]
-  let Torre:Piesa = piesas.filter(n => n.index === 7)[0]
-
-  Rey.index = 5
-  Torre.index = 4
-
-  newPiesas.push(Rey)
-  newPiesas.push(Torre)
 
   setPiesas(newPiesas)
 }

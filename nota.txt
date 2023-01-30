@@ -1,5 +1,7 @@
-en movimientos queda:
-    enroque
+movimientos:
     peon al paso
-    y coronar
-    para seguir supongo que necesitamos mas elementos por piesa (ver el tema de las posibles posiciones y demas...)
+    temas de movimientos de pesiesas por captura de rey
+    jaque(mostrar)
+    todo los movimientos de la pratida
+    reiniciar
+

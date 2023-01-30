@@ -1,16 +1,45 @@
+*{
+  margin: 0px;
+  padding: 0px;
+  overflow-x: hidden;
+}
+
+.content{
+  overflow-x: hidden;
+}
+
 .box-external-tablero{
   height: 90vh;
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.box-tablero-lateral{
+  height: 85vh;
+  margin-top: 2.5vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border:solid 1px black;
+}
+
+.box-tablero-lateral li{
+  list-style: none;
+  padding:0px;
+  margin:0px;
+  display: flex;
+  width:100%;
+}
+
+.box-tablero-lateral li div{
+  text-align: center;
 }
 
 .box-nav-bar{
   border-bottom:solid 1px black;
   background-color:#946e2b;
   height: 10vh;
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -26,7 +55,6 @@
   height: 520px;
   width: 520px;
   border: 1px black solid;
-  /*transition: all 100ms;*/
 }
 
 .casilla{
@@ -57,7 +85,6 @@
 
 .seleccionado{
   background-color: rgb(92, 131, 238);
-  /*border: solid 1px rgb(0, 0, 0);*/
 }
 
 .centrado {
