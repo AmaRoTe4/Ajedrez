@@ -16,7 +16,10 @@
 }
 
 .box-tablero-lateral{
+  /*margin: 0px;*/
+  /*padding: 0px;*/
   height: 85vh;
+  overflow-y: auto;
   margin-top: 2.5vh;
   display: flex;
   flex-direction: column;
@@ -24,7 +27,37 @@
   border:solid 1px black;
 }
 
-.box-tablero-lateral li{
+.box-tablero-lateral div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 8.5vh;
+  width: 110%;
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
+  border-bottom:solid 1px black;
+}
+
+.box-tablero-lateral ul{
+  height: 76.5vh;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.box-tablero-lateral ul::-webkit-scrollbar{
+  display: none;
+}
+
+
+.box-tablero-lateral ul li{
+  min-height:30px;
+  overflow: hidden;
   list-style: none;
   padding:0px;
   margin:0px;
@@ -32,7 +65,7 @@
   width:100%;
 }
 
-.box-tablero-lateral li div{
+.box-tablero-lateral ul li span{
   text-align: center;
 }
 
@@ -62,11 +95,11 @@
   height: 12.5%;
   width: 12.5%;
   border: 1px black solid;
-  background-color: rgb(99, 99, 99);
+  background-color: rgb(158, 209, 17);
 }
 
 .pintado{
-  background-color: rgb(255 255 255);
+  background-color: rgb(174, 0, 255);
 }
 
 .piesaNegra{
@@ -84,7 +117,7 @@
 }
 
 .seleccionado{
-  background-color: rgb(92, 131, 238);
+  background-color: rgb(255, 0, 0);
 }
 
 .centrado {

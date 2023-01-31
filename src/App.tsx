@@ -5,6 +5,7 @@ import PiesasTest from "../data/piesaTest.json"
 import { Movimientos, Piesa } from "./interface"
 import {conprobardorB , conprobardorN , conprobardorS , valorB , valorN , seleccionador , pathOfPhoto, movimientoDePos, deseleccionar} from "./function/funciones"
 import PantallaDeCoronar from "./components/coronado"
+import TableroDeJugadas from "./components/tableroJugadas"
 
 function App() {
   const [turno , setTurno] = useState<number>(1)
@@ -108,10 +109,10 @@ function App() {
 
               >
                   {conprobardorB(i , piesasB) && 
-                    <img src={pathOfPhoto(valorB(i , piesasB) , "b")} height={60} />
+                    <img src={pathOfPhoto(valorB(i , piesasB) , "b")} height={40} />
                   }  
                   {conprobardorN(i , piesasN) && 
-                    <img src={pathOfPhoto(valorN(i , piesasN) , "n")} height={60} />
+                    <img src={pathOfPhoto(valorN(i , piesasN) , "n")} height={40} />
                   }  
                   {/*<p style={{zIndex: "1"}}>
                     {i}
@@ -120,23 +121,9 @@ function App() {
           )}
         </div>
       </div>
-      <div className="box-tablero-lateral col-3">
-        {movimientos.map((n => 
-            //color:  
-          <li style={{
-              backgroundColor: `${n.id % 2 === 0 ? "white" : "black"}`,
-              color: `${n.id % 2 !== 0 ? "white" : "black"}`,
-            }}>
-            <div style={{width: "10%" , borderRight: "1px solid black"}}>
-              {n.id} 
-            </div>
-            <div style={{width: "90%"}}>
-              {n.piesa} 
-              {n.casilla} 
-            </div>
-          </li>
-        ))}
-      </div>
+      <TableroDeJugadas 
+        movimientos={movimientos}
+      />
     </div>
   )
 }
