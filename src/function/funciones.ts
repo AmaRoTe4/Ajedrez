@@ -1,4 +1,4 @@
-import { Movimientos, Piesa } from "../interface"
+import { Movimientos, Piesa, PosicionEnElTablero } from "../interface"
 
 export const pathOfPhoto = (valor:string , tipe:string):string => {
     switch (valor) {
@@ -49,8 +49,6 @@ export const valorN = (i:number , piesasN:Piesa[]):string => {
   return aux[0].piesa
 }
 
-//basic for now
-//sin funcion por ahora
 const positionActual = (casAct:number):number[] => {
     let ejes:number[] = [0, 0];
     for(let i = -1; i < casAct ; i+=8){
@@ -67,13 +65,15 @@ const obtenerValoresPooisblesDeCas = (
   aux:Piesa,
   piesasN:Piesa[],
   piesasB:Piesa[],
+  movimientos:Movimientos[],
 ):number[] => {
   switch (aux.piesa) {
     case "p":
       return PosPeon(
         aux.index,
         piesasN,
-        piesasB  
+        piesasB,
+        movimientos
       )
     case "t":
       return PosTorre(
@@ -146,7 +146,8 @@ const obtenerValorPeonAtaque = (piesasRival:Piesa[] , color:number):number[] => 
 const PosPeon = (
   pos:number,
   piesasN:Piesa[],
-  piesasB:Piesa[]
+  piesasB:Piesa[],
+  movimientos:Movimientos[],
 ):number[] => {
   let piesaActual:Piesa = piesasN.filter(n => n.index === pos)[0]
   if(piesaActual === undefined) piesasB.map(n => n.index === pos ? piesaActual = n : "")
@@ -171,7 +172,29 @@ const PosPeon = (
     if((posActual[0] + 1) * 8 <= pos + 7 && (posActual[0] + 1) * 8 + 8 > pos + 7 && PiesasN.includes(pos + 7)) Agregar.unshift(pos + 7)
   }
 
+  let peonPas:number[] = peonAlPaso(
+    pos,
+    PiesasN.includes(pos) ? 1 : 0,
+    movimientos.length !== 0 ? movimientos[movimientos.length - 1].casilla : 0,
+    PiesasN.includes(pos) ? piesasB :  piesasN,
+  )
+
+  peonPas.map(n => Agregar.push(n))
+
   return Agregar
+}
+
+const peonAlPaso = (
+  pos:number,
+  color:number,
+  movimientos: number,
+  piesasRival:Piesa[],
+):number[] => {
+
+    if(!((color === 0 && pos >= 32 && pos <= 39) || (color === 1 && pos >= 24 && pos <= 31))
+      || (piesasRival.filter(n => n.piesa === "p" && n.movimientosR === 1 && ( n.index === pos - 1 || n.index === pos + 1) && n.index === movimientos).length === 0)) return []
+
+    return [color === 0 ? movimientos + 8 : movimientos  - 8]
 }
 
 const PosTorre = (
@@ -569,11 +592,12 @@ export const seleccionador = (
         piesasN:Piesa[],
         piesasB:Piesa[],
         setPosibleCasillas:React.Dispatch<React.SetStateAction<number[]>>,
-        turno:number,
+        movimiento:number,
+        movimientos:Movimientos[],
     ) => {
-    let aux:Piesa[] = piesasN.filter(n => n.index === i && turno === 0);
+    let aux:Piesa[] = piesasN.filter(n => n.index === i && movimiento % 2 === 1);
     
-    if(aux.length === 0 && turno === 1) piesasB.map(n => n.index === i ? aux.push(n) : "");
+    if(aux.length === 0 && movimiento % 2 !== 1) piesasB.map(n => n.index === i ? aux.push(n) : "");
 
     if(aux.length === 0) {
       setSelecionado({
@@ -589,6 +613,7 @@ export const seleccionador = (
       aux[0],
       piesasN,
       piesasB,
+      movimientos
     )
     
     setPosibleCasillas(retorno.filter((n , i) => {
@@ -611,8 +636,8 @@ export const movimientoDePos = (
   setPiesasRival:React.Dispatch<React.SetStateAction<Piesa[]>>,
   setSelecionado:React.Dispatch<React.SetStateAction<Piesa>>,
   setPosibleCasillas:React.Dispatch<React.SetStateAction<number[]>>,
-  setTurno:React.Dispatch<React.SetStateAction<number>>,
   setMovimientos:React.Dispatch<React.SetStateAction<Movimientos[]>>,
+  movimientos:Movimientos[],
   movimiento:number,
   setMovimiento:React.Dispatch<React.SetStateAction<number>>,
 ) => {
@@ -625,7 +650,7 @@ export const movimientoDePos = (
     color: movimiento % 2 === 0 ? 0 : 1,
     piesa: piesa.piesa ,
     casilla: newPos,
-    captura: "", 
+    captura: piesasRival.filter(n => n.index === newPos).length !== 0 ? piesasRival.filter(n => n.index === newPos)[0].piesa : "", 
   } 
 
   if(piesa.piesa === 'r' && (newPos === 57 || newPos === 1) && piesa.movimientosR === 0){
@@ -635,6 +660,23 @@ export const movimientoDePos = (
   else if(piesa.piesa === 'r' && (newPos === 61 || newPos === 5) && piesa.movimientosR === 0){
     enroqueLargo(piesas , setPiesas , newPos === 61)
   } 
+
+  else if(peonAlPaso(
+    posActual,
+    movimiento % 2 === 0 ? 0 : 1 ,
+    movimientos.length > 0 ? movimientos[movimientos.length - 1].casilla : 0,
+    piesasRival
+  ).length > 0){
+    let pos = peonAlPaso(posActual,movimiento % 2 === 0 ? 0 : 1 ,movimientos[movimientos.length - 1].casilla,piesasRival)[0]
+    let borrar = movimiento % 2 === 0 ? pos - 8 : pos + 8; 
+
+    piesa.index = newPos
+    piesa.movimientosR++
+    piesasFilter.push(piesa)
+  
+    setPiesas(piesasFilter)
+    setPiesasRival(piesasRival.filter(n => n.index !== borrar))
+  }
 
   else{    
     piesa.index = newPos
@@ -651,7 +693,6 @@ export const movimientoDePos = (
     movimientosR : 0
   })
   setPosibleCasillas([])
-  setTurno(n => n === 0 ? 1 : 0)
   setMovimiento(n => n + 1)
   setMovimientos(n => [...n , NewMovimiento])    
 }
@@ -666,6 +707,40 @@ export const deseleccionar = (
       movimientosR : 0
     })
     setPosibleCasillas([])
+}
+
+//tenemos que indagar en el tema de las  camputas , enroque y captura
+export const TraducionDeNumeroAPos = (pos:number):PosicionEnElTablero => {
+  let posionX:number = pos % 8;
+  let posionY:number = (pos - posionX) / 8;
+
+  const posX = (pos:number):string => {
+    switch (pos){
+        case 0:
+        return "a"
+        case 1:
+        return "b"
+        case 2:
+        return "c"
+        case 3:
+        return "d"
+        case 4:
+        return "e"
+        case 5:
+        return "f"
+        case 6:
+        return "g"
+        case 7:
+        return "h"
+    }
+    return ""
+  }
+
+  return {
+    x:posX(posionX) , 
+    y:posionY + 1
+  }
+
 }
 
 export const coronarPiesa = (

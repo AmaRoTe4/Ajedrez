@@ -12,3 +12,8 @@ export interface Movimientos{
     casilla: number;
     captura: string; 
 }
+
+export interface PosicionEnElTablero{
+    x:string;
+    y:number
+}

@@ -8,7 +8,6 @@ import PantallaDeCoronar from "./components/coronado"
 import TableroDeJugadas from "./components/tableroJugadas"
 
 function App() {
-  const [turno , setTurno] = useState<number>(1)
   const [seleccionado , setSelecionado] = useState<Piesa>({
     index: -1,
     piesa: 'p',
@@ -71,7 +70,7 @@ function App() {
         setPiesasN={setPiesasN}
       />
       <div className="box-external-tablero col-8">
-        <div className={`box-tablero row ${turno === 1 ? "girado" : ""}`}>
+        <div className={`box-tablero row ${movimiento % 2 !== 1 ? "girado" : ""}`}>
           {casillas.map((n , i) => 
               <div 
                   key={i} 
@@ -80,8 +79,8 @@ function App() {
                     ${(i % 2  === 0 && aux[Math.trunc(i / 8)] % 2 === 0) 
                     || (i % 2  !== 0 && aux[Math.trunc(i / 8)] % 2 !== 0)  
                     ? 'pintado' : ""}
-                    ${conprobardorB(i , piesasB) ? `piesaBlanca ${turno === 1 ? "girado" : ""}` : ""}
-                    ${conprobardorN(i , piesasN) ? `piesaNegra ${turno === 1 ? "girado" : ""}` : ""}
+                    ${conprobardorB(i , piesasB) ? `piesaBlanca ${movimiento % 2 !== 1 ? "girado" : ""}` : ""}
+                    ${conprobardorN(i , piesasN) ? `piesaNegra ${movimiento % 2 !== 1 ? "girado" : ""}` : ""}
                     ${conprobardorS(i , seleccionado) || posibleCasillas.includes(i) ? "seleccionado" : ""} `
                   }
                   
@@ -91,20 +90,20 @@ function App() {
                       ? movimientoDePos(
                         seleccionado.index, 
                         i, 
-                        turno === 1 ? piesasB : piesasN,
-                        turno === 1 ? piesasN : piesasB,
-                        turno === 1 ? setPiesasB : setPiesasN,
-                        turno === 1 ? setPiesasN : setPiesasB,
+                        movimiento % 2 !== 1 ? piesasB : piesasN,
+                        movimiento % 2 !== 1 ? piesasN : piesasB,
+                        movimiento % 2 !== 1 ? setPiesasB : setPiesasN,
+                        movimiento % 2 !== 1 ? setPiesasN : setPiesasB,
                         setSelecionado,
                         setPosibleCasillas,
-                        setTurno,
                         setMovimientos,
+                        movimientos,
                         movimiento,
                         setMovimiento,
                       )
                       : seleccionado.index === i
                       ? deseleccionar(setSelecionado , setPosibleCasillas)
-                      : seleccionador(i , setSelecionado , piesasN , piesasB ,  setPosibleCasillas , turno)}
+                      : seleccionador(i , setSelecionado , piesasN , piesasB ,  setPosibleCasillas , movimiento , movimientos)}
                     }
 
               >

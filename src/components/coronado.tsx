@@ -22,8 +22,8 @@ export default function PantallaDeCoronar(
     }
 
     return (
-        <>
-            {(coronar()[0] || coronar()[1]) && <div className="box-coronado position-absolute top-50 start-50 translate-middle">
+            (coronar()[0] || coronar()[1]) ? 
+            <div className="box-coronado position-absolute top-50 start-50 translate-middle">
               <div onClick={e => {e.preventDefault() ; 
                 coronarPiesa(
                   coronar()[1] ? piesasB : piesasN,
@@ -76,7 +76,6 @@ export default function PantallaDeCoronar(
                   <img src={pathOfPhoto("d" , "n")} height={100} />
                 }
               </div>
-            </div>}
-        </>
+            </div> : <></>
     )
 }
