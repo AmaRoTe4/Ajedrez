@@ -18,6 +18,7 @@ function App() {
     0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63
   ])
   const aux:number[] = [0,1,2,3,4,5,6,7]
+  const [posJaque , setPosJaque] = useState<number>(-1)
   const [movimiento , setMovimiento] = useState<number>(0)
   const [movimientos , setMovimientos] = useState<Movimientos[]>([])
   const [piesasB , setPiesasB] = useState<Piesa[]>(PiesasB)
@@ -81,7 +82,8 @@ function App() {
                     ? 'pintado' : ""}
                     ${conprobardorB(i , piesasB) ? `piesaBlanca ${movimiento % 2 !== 1 ? "girado" : ""}` : ""}
                     ${conprobardorN(i , piesasN) ? `piesaNegra ${movimiento % 2 !== 1 ? "girado" : ""}` : ""}
-                    ${conprobardorS(i , seleccionado) || posibleCasillas.includes(i) ? "seleccionado" : ""} `
+                    ${conprobardorS(i , seleccionado) || posibleCasillas.includes(i) ? "seleccionado" : ""}
+                    ${posJaque === i ? "casillaEnJaque" : ""} `
                   }
                   
                   onClick={e => {
@@ -103,8 +105,10 @@ function App() {
                       )
                       : seleccionado.index === i
                       ? deseleccionar(setSelecionado , setPosibleCasillas)
-                      : seleccionador(i , setSelecionado , piesasN , piesasB ,  setPosibleCasillas , movimiento , movimientos)}
+                      : seleccionador(i , setSelecionado , piesasN , piesasB ,  setPosibleCasillas , movimiento , movimientos);
+                    
                     }
+                }
 
               >
                   {conprobardorB(i , piesasB) && 

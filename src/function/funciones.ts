@@ -104,6 +104,7 @@ const obtenerValoresPooisblesDeCas = (
         aux.index,
         piesasN,
         piesasB,
+        movimientos
       )
 }
   return [0,0]
@@ -405,6 +406,7 @@ const PosRey = (
   pos:number,
   piesasN:Piesa[],
   piesasB:Piesa[],
+  movimientos:Movimientos[]
 ):number[] => {
   let posAgregar:number[] = []
   let posEnroque:number[] = []
@@ -427,7 +429,7 @@ const PosRey = (
 
   let posiblesPosDelRival:number[] = []
   piesasRival.map(n => n.piesa !== "r" && n.piesa !== "p"
-    ? posiblesPosDelRival.push(...obtenerValoresPooisblesDeCas(n, piesasRival , piesas))
+    ? posiblesPosDelRival.push(...obtenerValoresPooisblesDeCas(n, piesasRival , piesas , movimientos))
     : "" 
   ) 
   
@@ -584,6 +586,10 @@ const enroqueLargo = (
   newPiesas.push(Torre)
 
   setPiesas(newPiesas)
+}
+
+const jaque = (pos:number , posRival:Piesa[]):boolean => {
+  return true
 }
 
 export const seleccionador = (

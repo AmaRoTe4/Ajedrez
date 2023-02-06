@@ -152,3 +152,7 @@
   cursor: pointer;
   z-index: 5;
 }
+
+.casillaEnJaque{
+  background-color: red;
+}
